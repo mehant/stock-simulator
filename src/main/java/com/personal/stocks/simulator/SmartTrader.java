@@ -49,7 +49,7 @@ public class SmartTrader {
      * the sell will be triggered
      * Its X times the buy price
      */
-    public float profitMargin = (float) 1.25;
+    public float profitMargin = (float) 2;
 
     LinkedHashMap<String, BuyDetails> portfolio;
 

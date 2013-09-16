@@ -15,6 +15,8 @@ import java.io.File;
  */
 public class Simulator {
 
+    StockExchange mse;
+
     public void startSimulation(File inputDirectory, SmartTrader trader) throws Exception {
 
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse("1980-01-01");
@@ -34,7 +36,8 @@ public class Simulator {
          * I would name the stock exchange after myself
          *
          */
-        StockExchange mse = new StockExchange();
+        if (mse == null)
+          mse = new StockExchange();
 
         /* Now the StockExchange has all the stock
          * data in the form of a hashmap

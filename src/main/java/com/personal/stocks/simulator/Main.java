@@ -18,19 +18,6 @@ public class Main {
         /* Verify if input directory exists */
         String inputDirectoryName = args[0];
 
-        /*  portfolio */
-        String[] portfolio = {"GE"};
-
-        /* Get the total investment amount and
-         * create a Money object
-         */
-
-        System.out.println("Investing: " + args[1]);
-
-        Money money = new Money(Integer.parseInt(args[1]));
-        SmartTrader trader = new SmartTrader(money);
-        trader.setPortfolio(portfolio);
-
         File inputDirectory = new File(inputDirectoryName);
 
         if (!inputDirectory.exists())
@@ -39,9 +26,33 @@ public class Main {
             System.exit(0);
         }
 
-        /* Start the simulator */
+        /* Initialize the simulator */
         Simulator sim = new Simulator();
 
-        sim.startSimulation(inputDirectory, trader);
+        for (File inputFile: inputDirectory.listFiles())
+        {
+            /*  portfolio */
+            //String[] portfolio = {"GE"};
+
+            String[] portfolio = new String[1];
+
+            portfolio[0] = inputFile.getName();
+
+            System.out.println("Trading stock: " + portfolio[0] + "\n \n \n");
+
+            /* Get the total investment amount and
+             * create a Money object
+             */
+
+            System.out.println("Investing: " + args[1]);
+
+            Money money = new Money(Integer.parseInt(args[1]));
+            SmartTrader trader = new SmartTrader(money);
+            trader.setPortfolio(portfolio);
+
+            sim.startSimulation(inputDirectory, trader);
+
+            System.out.println("-------------------------------------");
+        }
     }
 }

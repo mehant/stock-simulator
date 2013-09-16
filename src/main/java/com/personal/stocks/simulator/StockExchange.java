@@ -30,6 +30,9 @@ public class StockExchange {
         this.startDate = startDate;
         this.currentDate = startDate;
 
+        if (stockData != null)
+            return; /* nothing to do; we've already initialized the Stock exchange */
+
         for (File inputFile: inputDirectory.listFiles())
         {
             Reader read = new Reader(inputFile.getAbsolutePath(), Reader.YEAR_LOW_INFO);
