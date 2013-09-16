@@ -1,7 +1,10 @@
 package com.personal.stocks.set52WLow;
 
 import au.com.bytecode.opencsv.CSVReader;
+import com.csvreader.CsvReader;
 
+
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,11 +28,22 @@ import org.joda.time.Days;
  * To change this template use File | Settings | File Templates.
  */
 public class Reader {
+
+    public static final String BASIC_INFO = "BASIC";
+    public static final String YEAR_LOW_INFO = "YEARLOW";
+
     String fileName;
 
-    Reader(String fileName)
+    String infoType;
+
+    public Reader (String fileName, String infoType)
     {
         this.fileName = fileName;
+        this.infoType = infoType;
+    }
+    Reader(String fileName)
+    {
+        this(fileName, Reader.BASIC_INFO);
     }
 
     public LinkedList<DayStock> createListFromFile() throws IOException, ParseException {
@@ -44,18 +58,33 @@ public class Reader {
         /* Read the header */
         String[] nextLine = read.readNext();
 
-        //String[] headers = read.getHeaders();
-
         Date nextDate = null;
 
         while ((nextLine = read.readNext()) != null)
         {
-            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(nextLine[0]);
 
-            DayStock stock = new DayStock((new File(fileName).getName()), Float.parseFloat(nextLine[1]),
-                                          Float.parseFloat(nextLine[2]),
-                                          Float.parseFloat(nextLine[3]),
-                                          date);
+            DayStock stock = null;
+
+            if (this.infoType.equalsIgnoreCase(Reader.BASIC_INFO))
+            {
+                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(nextLine[0]);
+
+                stock = new DayStock((new File(fileName).getName()), Float.parseFloat(nextLine[1]),
+                                      Float.parseFloat(nextLine[2]),
+                                      Float.parseFloat(nextLine[3]),
+                                      date);
+            }
+            else if (this.infoType.equalsIgnoreCase(Reader.YEAR_LOW_INFO))
+            {
+                Date date = new SimpleDateFormat("MM-dd-yyyy").parse(nextLine[0]);
+
+                Date yearLowDate = new SimpleDateFormat("MM-dd-yyyy").parse(nextLine[5]);
+
+                stock  = new DayStock((new File(fileName).getName()), Float.parseFloat(nextLine[1]),
+                        Float.parseFloat(nextLine[2]),
+                        Float.parseFloat(nextLine[3]),
+                        date, Float.parseFloat(nextLine[4]), yearLowDate);
+            }
 
 
             /**
@@ -82,6 +111,9 @@ public class Reader {
                         Date dupDate = new Date();
                         dupDate.setTime(nextDate.getTime());
 
+                        if (this.infoType == Reader.YEAR_LOW_INFO)
+                            System.err.println("ERROR: Missing dates while reading year low data: " + dupDate);
+
                         list.addFirst(new DayStock(stock.symbol, stock.open, stock.high, stock.low, dupDate));
                     }
                     nextDate.setTime(nextDate.getTime() - 1 * 24 * 60 * 60 * 1000);
@@ -90,7 +122,10 @@ public class Reader {
 
             }
 
-            list.addFirst(stock);
+            if (this.infoType == Reader.BASIC_INFO)
+                list.addFirst(stock);
+            else if (this.infoType == Reader.YEAR_LOW_INFO)
+                list.addLast(stock);
 
             nextDate = new Date();
             nextDate.setTime(stock.day.getTime());
