@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.io.IOException;
 import com.personal.stocks.set52WLow.DayStock;
@@ -105,7 +106,6 @@ public class Reader {
 
                 int  i = 0;
                 do {
-
                     if (i > 0)
                     {
                         Date dupDate = new Date();
@@ -116,10 +116,13 @@ public class Reader {
 
                         list.addFirst(new DayStock(stock.symbol, stock.open, stock.high, stock.low, dupDate));
                     }
-                    nextDate.setTime(nextDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(nextDate);
+                    cal.add(Calendar.DATE, -1);
+                    //nextDate.setTime(nextDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+                    nextDate = cal.getTime();
                     i++;
                 }   while (currentDate.before(nextDate));
-
             }
 
             if (this.infoType == Reader.BASIC_INFO)

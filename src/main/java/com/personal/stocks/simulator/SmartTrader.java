@@ -1,10 +1,6 @@
 package com.personal.stocks.simulator;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Date;
-import java.util.Calendar;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -49,7 +45,7 @@ public class SmartTrader {
      * the sell will be triggered
      * Its X times the buy price
      */
-    public float profitMargin = (float) 2;
+    public float profitMargin = (float) 1.01;
 
     LinkedHashMap<String, BuyDetails> portfolio;
 
@@ -77,91 +73,147 @@ public class SmartTrader {
 
     public void performAction(StockExchange mse, Date currentDate) {
 
-        Iterator it = portfolio.entrySet().iterator();
-
-        for (Map.Entry<String, BuyDetails> entry: portfolio.entrySet())
+        try
         {
-            String symbol  = entry.getKey();
-            int    sellQty = entry.getValue().getQuantity();
-            int    buyQty  = 0;
+            Iterator it = portfolio.entrySet().iterator();
 
-            if ((buyQty = checkToBuy(symbol, mse, currentDate)) > 0)
+            for (Map.Entry<String, BuyDetails> entry: portfolio.entrySet())
             {
-                mse.buy(symbol, buyQty, money);
-            }
+                String symbol  = entry.getKey();
+                int    sellQty = entry.getValue().getQuantity();
+                int    buyQty  = 0;
 
-            if (sellQty > 0 && (checkToSell(symbol, mse)) == true)
-            {
-                mse.sell(symbol, sellQty, money);
-                portfolio.put(symbol, new BuyDetails(0, 0));
-            }
+                if ((buyQty = checkToBuy(symbol, mse, currentDate)) > 0)
+                {
+                    mse.buy(symbol, buyQty, money);
+                }
 
+                if (sellQty > 0 && (checkToSell(symbol, mse)) == true)
+                {
+                    mse.sell(symbol, sellQty, money);
+                    portfolio.put(symbol, new BuyDetails(0, 0));
+                }
+
+            }
+        }
+        catch (StockExchangeException e)
+        {
+            //System.out.println("ERROR: Error while interacting with stock exchange ");
+            //e.printStackTrace(System.out);
         }
     }
 
     private int checkToBuy(String symbol, StockExchange mse, Date currentDate) {
 
-        float availableFunds = money.getAvailableFunds();
-        float stockPrice     = mse.getHighPrice(symbol);
-
-        /* Naive approach; don't buy the stock if we already have it */
-        if (portfolio.get(symbol).getQuantity() > 0)
-            return 0;
-
-        if (availableFunds < stockPrice)
-            return 0;
-
-        /* we have enough funds to buy the stock (atleast one)
-         * Check if we want to buy the stocks
-         */
-        if (mse.getLowPrice(symbol) == mse.getYearLowPrice(symbol))
+        try
         {
+            float availableFunds = money.getAvailableFunds();
+            float stockPrice     = mse.getHighPrice(symbol);
 
-            /* We want to buy after stock has been trading in the market
-             * for atleast 'years' years
+            /* Naive approach; don't buy the stock if we already have it */
+            if (portfolio.get(symbol).getQuantity() > 0)
+                return 0;
+
+            if (availableFunds < stockPrice)
+                return 0;
+
+            /* we have enough funds to buy the stock (atleast one)
+             * Check if we want to buy the stocks
              */
-            Date stableDate = new Date();
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(mse.getFirstTradeDate(symbol));
-            cal.add(Calendar.YEAR, years);
-            stableDate = cal.getTime();
-
-            if (currentDate.after(stableDate))
+            if (mse.getLowPrice(symbol) == mse.getYearLowPrice(symbol))
             {
 
-                //System.out.println("Stable Date" + stableDate + " Current Date: " + currentDate + "First Trade date: " + mse.getFirstTradeDate(symbol));
-
-                /* looks like we are near the 52 week low,
-                 * Go ahead and buy
+                /* We want to buy after stock has been trading in the market
+                 * for atleast 'years' years
                  */
-                int quantity = (int) Math.floor(availableFunds/stockPrice);
+                Date stableDate = new Date();
 
-                /* TODO: This should not be here
-                 * move it
-                 */
-                portfolio.put(symbol, new BuyDetails(quantity, stockPrice));
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(mse.getFirstTradeDate(symbol));
+                cal.add(Calendar.YEAR, years);
+                stableDate = cal.getTime();
 
-                return quantity;
+                if (currentDate.after(stableDate))
+                {
+
+                    //System.out.println("Stable Date" + stableDate + " Current Date: " + currentDate + "First Trade date: " + mse.getFirstTradeDate(symbol));
+
+                    /* looks like we are near the 52 week low,
+                     * Go ahead and buy
+                     */
+                    int quantity = (int) Math.floor(availableFunds/stockPrice);
+
+                    /* TODO: This should not be here
+                     * move it
+                     */
+                    portfolio.put(symbol, new BuyDetails(quantity, stockPrice));
+
+                    return quantity;
+                }
             }
         }
-
+        catch (StockExchangeException e)
+        {
+            //System.out.println("ERROR: Error while interacting with stock exchange ");
+            //e.printStackTrace(System.out);
+            return 0;
+        }
         return 0;
-
     }
 
     private boolean checkToSell(String symbol, StockExchange mse) {
 
-        float buyPrice  = portfolio.get(symbol).getBuyPrice();
-        float sellPrice = mse.getHighPrice(symbol);
-
-        if (((sellPrice/buyPrice)) >= profitMargin)
+        try
         {
-            //System.out.println("Sellprice: " + sellPrice + "buyPrice: " + buyPrice + "margin" + ((sellPrice/buyPrice)));
-            return true;
+            float buyPrice  = portfolio.get(symbol).getBuyPrice();
+            float sellPrice = mse.getHighPrice(symbol);
+
+            if (((sellPrice/buyPrice)) >= profitMargin)
+            {
+                //System.out.println("Sellprice: " + sellPrice + "buyPrice: " + buyPrice + "margin" + ((sellPrice/buyPrice)));
+                return true;
+            }
+
+        }
+        catch (StockExchangeException e)
+        {
+            //System.out.println("ERROR: Error while interacting with stock exchange ");
+            //e.printStackTrace(System.out);
+
         }
 
         return false;
 
+
+      }
+
+    public float getTotalAssetValue(StockExchange mse)
+    {
+        float totalAssets = 0;
+        try
+        {
+            /* Total asset = available funds + value of stocks */
+            totalAssets = this.money.getAvailableFunds();
+            System.out.println("Available funds: " + totalAssets);
+
+            Iterator it = portfolio.entrySet().iterator();
+
+            for (Map.Entry<String, BuyDetails> entry: portfolio.entrySet())
+            {
+                String symbol = entry.getKey();
+                BuyDetails detail = entry.getValue();
+
+                float currentPrice = mse.getLastPrice(symbol);
+
+                System.out.println("Current Stock value: " + symbol + " Price: " + currentPrice + " quantity: " + detail.quantity);
+                totalAssets += currentPrice * detail.quantity;
+            }
+        }
+        catch (StockExchangeException e)
+        {
+
+        }
+
+        return totalAssets;
     }
 }

@@ -46,7 +46,7 @@ public class Simulator {
          */
         mse.initStockExchange(inputDirectory, date);
 
-        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse("2013-09-15");
+        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse("2013-09-13");
 
         System.out.println("Before starting ");
         trader.money.print();
@@ -62,5 +62,6 @@ public class Simulator {
 
         System.out.println("Finally left with: ");
         trader.money.print();
+        System.out.println("\nTotal Assets: " + trader.getTotalAssetValue(mse));
     }
 }
