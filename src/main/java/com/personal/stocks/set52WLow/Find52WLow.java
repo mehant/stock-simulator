@@ -49,12 +49,26 @@ public class Find52WLow {
             }
         });
 
+        /* Below queue to find 52 week high */
+        PriorityQueue<DayStock> highpq = new PriorityQueue<DayStock>(365, new Comparator<DayStock>() {
+            @Override
+            public int compare(DayStock dayStock, DayStock dayStock2) {
+
+                if (dayStock.high > dayStock2.high)
+                    return -1;
+                else if (dayStock.high < dayStock2.high)
+                    return 1;
+                else
+                    return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
 
         if (stockList.size() <= heapSize)
             System.err.println("ERROR: Size of stock list is lesser than heap size cannot compute 52W low");
         /* Initialize the priority queue with first 365 entries
          */
         initPriorityQueue(pq);
+        initHighPriorityQueue(highpq);
 
         /* Now we have  a priority queue with size 365
          * For each new element in our list, we remove
@@ -69,15 +83,21 @@ public class Find52WLow {
         {
             /* Remove the stock at the beginning of the window */
             pq.remove(stockList.get(windowBeginIndex));
+            highpq.remove(stockList.get(windowBeginIndex));
 
             /* Add the stock at the end of the window */
             DayStock ds = stockList.get(windowEndIndex);
             pq.add(ds);
+            highpq.add(ds);
 
             DayStock yearLow = pq.peek();
 
             ds.yearLow = yearLow.low;
             ds.yearLowDay = yearLow.day;
+
+            DayStock yearHigh = highpq.peek();
+            ds.yearHigh = yearHigh.high;
+            ds.yearHighDay = yearHigh.day;
 
             windowBeginIndex++;
             windowEndIndex++;
@@ -95,6 +115,28 @@ public class Find52WLow {
             DayStock yearLowStock = pq.peek();
             ds.yearLow = yearLowStock.low;
             ds.yearLowDay = yearLowStock.day;
+
+            /* Check if our queue is complete */
+            if (count >= 365)
+            {
+                System.out.println("Index: " + stockList.indexOf(ds));
+                break;
+            }
+        }
+
+    }
+
+    private void initHighPriorityQueue(PriorityQueue<DayStock> pq) {
+
+        int count = 0;
+        for (DayStock ds: stockList)
+        {
+            pq.add(ds);
+            count++;
+
+            DayStock yearLowStock = pq.peek();
+            ds.yearHigh = yearLowStock.high;
+            ds.yearHighDay = yearLowStock.day;
 
             /* Check if our queue is complete */
             if (count >= 365)

@@ -15,6 +15,7 @@ import java.util.Date;
 public class DayStock {
 
     String symbol;
+    Date   day;
     float  open;
     float  high;
     float  low;
@@ -22,8 +23,9 @@ public class DayStock {
     double volume;
     float  adjustedClose;
     float  yearLow;
-    Date   day;
     Date   yearLowDay;
+    float  yearHigh;
+    Date   yearHighDay;
 
     public DayStock(String symbol, float open, float high, float low, Date day)
     {
@@ -84,7 +86,7 @@ public class DayStock {
 
     public String[] getStringWithoutSymbol() {
 
-        String[] day = new String[6];
+        String[] day = new String[8];
 
         SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
 
@@ -94,6 +96,8 @@ public class DayStock {
         day[3] = Float.toString(this.low);
         day[4] = Float.toString(this.yearLow);
         day[5] = formatter.format(this.yearLowDay);
+        day[6] = Float.toString(this.yearHigh);
+        day[7] = formatter.format(this.yearHighDay);
 
         return day;
     }

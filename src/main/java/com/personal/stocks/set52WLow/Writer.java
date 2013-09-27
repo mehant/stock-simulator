@@ -28,7 +28,7 @@ public class Writer {
     {
         CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
 
-        String[] description = {"Date", "Open", "High", "Low", "52 Week Low", "52 Week Low Date"};
+        String[] description = {"Date", "Open", "High", "Low", "52 Week Low", "52 Week Low Date, 52 Week High, 52 Week High Date"};
 
         writer.writeNext(description);
 
