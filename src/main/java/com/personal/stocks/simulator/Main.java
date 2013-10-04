@@ -1,6 +1,9 @@
 package com.personal.stocks.simulator;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import org.apache.hadoop.conf.Configuration;
 
 
 /**
@@ -29,6 +32,36 @@ public class Main {
         /* Initialize the simulator */
         Simulator sim = new Simulator();
 
+        Configuration conf = new Configuration();
+        File file = new File("/Users/mbaid/set52WLow/configuration.xml");
+
+        /* If configuration file does not exist, exit */
+        if (!file.exists())
+            System.exit(0);
+
+        InputStream input = new FileInputStream(file.getAbsoluteFile());
+
+        /* Add the properties in the configuration file */
+        conf.addResource(input);
+
+        String className = conf.get("simulator.trader.class");
+        Class <? extends Object> traderClass = null;
+
+        if (className != null)
+        {
+
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        traderClass = cl.loadClass(className);
+        System.out.println("trader class: " + traderClass);
+
+
+        }
+
+        /* For each stock symbol in this directory
+         * run the simulation assuming you can buy
+         * only one stock
+         */
+
         for (File inputFile: inputDirectory.listFiles())
         {
             /*  portfolio */
@@ -47,10 +80,17 @@ public class Main {
             System.out.println("Investing: " + args[1]);
 
             Money money = new Money(Integer.parseInt(args[1]));
-            SmartTrader trader = new SmartTrader(money);
-            trader.setPortfolio(portfolio);
 
-            sim.startSimulation(inputDirectory, trader);
+            System.out.println("TraderClassName: " + traderClass.getName());
+
+            Trader trader1 = (Trader) traderClass.newInstance();
+
+            trader1.money = money;
+
+            //SmartTrader trader = new SmartTrader(money);
+            trader1.setPortfolio(portfolio);
+
+            sim.startSimulation(inputDirectory, trader1);
 
             System.out.println("-------------------------------------");
         }

@@ -89,7 +89,7 @@ public class StockExchange {
         return false;
     }
 
-    public void buy(String symbol, int buyQty, Money money) throws StockExchangeException
+    public void buy(String symbol, int buyQty, Money money)
     {
 
         LinkedList<DayStock> stockDayPrices = getStockList(symbol);
@@ -107,7 +107,7 @@ public class StockExchange {
         System.out.println("Bought stocks: " + symbol + " Date:" + currentDate + " cost/stock: " + stockPrice + " Qty: " + buyQty + " remaining funds: " + money.getAvailableFunds());
     }
 
-    public void sell(String symbol, int sellQty, Money money) throws StockExchangeException
+    public void sell(String symbol, int sellQty, Money money)
     {
 
         LinkedList<DayStock> stockDayPrices = getStockList(symbol);
@@ -119,7 +119,7 @@ public class StockExchange {
         System.out.println("Sold stocks: " + symbol + " Date: " + currentDate + " cost/stock: " + costPrice + " Qty: " + sellQty + " remaining funds: " + money.getAvailableFunds());
     }
 
-    public float getHighPrice(String symbol) throws StockExchangeException
+    public float getHighPrice(String symbol)
     {
         LinkedList<DayStock> stockDayPrices = getStockList(symbol);
 
@@ -145,7 +145,7 @@ public class StockExchange {
         return STOCK_ERR_CODE;
     }
 
-    public float getLowPrice(String symbol) throws StockExchangeException
+    public float getLowPrice(String symbol)
     {
 
         LinkedList<DayStock> stockDayPrices = getStockList(symbol);
@@ -172,7 +172,7 @@ public class StockExchange {
         return STOCK_ERR_CODE;
     }
 
-    public float getYearLowPrice(String symbol) throws StockExchangeException
+    public float getYearLowPrice(String symbol)
     {
 
         LinkedList<DayStock> stockDayPrices = getStockList(symbol);
@@ -226,7 +226,8 @@ public class StockExchange {
         this.currentDate = date;
     }
 
-    public float getLastPrice(String symbol) throws  StockExchangeException{
+    public float getLastPrice(String symbol)
+    {
         /* returns the low price for the current date
          * if the price for today does not exist it will
          * return the low price for the last available date

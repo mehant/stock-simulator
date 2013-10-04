@@ -9,7 +9,17 @@ import java.util.*;
  * Time: 5:20 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SmartTrader {
+public class SmartTrader extends Trader {
+
+    public SmartTrader()
+    {
+        super();
+    }
+
+    public SmartTrader(Money money)
+    {
+        super(money);
+    }
 
     public class BuyDetails
     {
@@ -39,13 +49,13 @@ public class SmartTrader {
 
     }
 
-    public Money money;
+    //public Money money;
 
     /* Indicates the margin upon which
      * the sell will be triggered
      * Its X times the buy price
      */
-    public float profitMargin = (float) 1.01;
+    public float profitMargin = (float) 1.25;
 
     LinkedHashMap<String, BuyDetails> portfolio;
 
@@ -55,10 +65,10 @@ public class SmartTrader {
     int years = 5;
 
 
-    public SmartTrader(Money money)
+    /*public SmartTrader(Money money)
     {
         this.money = money;
-    }
+    } */
 
     public void setPortfolio(String[] symbols)
     {
@@ -73,8 +83,6 @@ public class SmartTrader {
 
     public void performAction(StockExchange mse, Date currentDate) {
 
-        try
-        {
             Iterator it = portfolio.entrySet().iterator();
 
             for (Map.Entry<String, BuyDetails> entry: portfolio.entrySet())
@@ -95,18 +103,10 @@ public class SmartTrader {
                 }
 
             }
-        }
-        catch (StockExchangeException e)
-        {
-            //System.out.println("ERROR: Error while interacting with stock exchange ");
-            //e.printStackTrace(System.out);
-        }
     }
 
-    private int checkToBuy(String symbol, StockExchange mse, Date currentDate) {
+    public int checkToBuy(String symbol, StockExchange mse, Date currentDate) {
 
-        try
-        {
             float availableFunds = money.getAvailableFunds();
             float stockPrice     = mse.getHighPrice(symbol);
 
@@ -151,20 +151,12 @@ public class SmartTrader {
                     return quantity;
                 }
             }
-        }
-        catch (StockExchangeException e)
-        {
-            //System.out.println("ERROR: Error while interacting with stock exchange ");
-            //e.printStackTrace(System.out);
-            return 0;
-        }
+
         return 0;
     }
 
-    private boolean checkToSell(String symbol, StockExchange mse) {
+    public boolean checkToSell(String symbol, StockExchange mse) {
 
-        try
-        {
             float buyPrice  = portfolio.get(symbol).getBuyPrice();
             float sellPrice = mse.getHighPrice(symbol);
 
@@ -174,24 +166,14 @@ public class SmartTrader {
                 return true;
             }
 
-        }
-        catch (StockExchangeException e)
-        {
-            //System.out.println("ERROR: Error while interacting with stock exchange ");
-            //e.printStackTrace(System.out);
-
-        }
-
         return false;
-
-
       }
 
+    @Override
     public float getTotalAssetValue(StockExchange mse)
     {
         float totalAssets = 0;
-        try
-        {
+
             /* Total asset = available funds + value of stocks */
             totalAssets = this.money.getAvailableFunds();
             System.out.println("Available funds: " + totalAssets);
@@ -208,12 +190,6 @@ public class SmartTrader {
                 System.out.println("Current Stock value: " + symbol + " Price: " + currentPrice + " quantity: " + detail.quantity);
                 totalAssets += currentPrice * detail.quantity;
             }
-        }
-        catch (StockExchangeException e)
-        {
-
-        }
-
         return totalAssets;
     }
 }

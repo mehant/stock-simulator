@@ -3,8 +3,10 @@ package com.personal.stocks.simulator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Calendar;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,16 +17,35 @@ import java.io.File;
  */
 public class Simulator {
 
+
     StockExchange mse;
 
-    public void startSimulation(File inputDirectory, SmartTrader trader) throws Exception {
+    /* This value gives the sum of total assets
+    * for each simulation
+    */
+    float sumOfAllSimulations = 0;
+
+
+    public void startSimulation(File inputDirectory, Trader trader) throws Exception {
 
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse("1980-01-01");
-        startSimulation(inputDirectory, trader, date);
+
+        Calendar cal = Calendar.getInstance();
+        cal.clear(Calendar.HOUR);
+        cal.clear(Calendar.MINUTE);
+        cal.clear(Calendar.SECOND);
+        cal.clear(Calendar.MILLISECOND);
+
+        Date endDate = cal.getTime();
+
+        startSimulation(inputDirectory, trader, date, endDate);
 
     }
 
-    private void startSimulation(File inputDirectory, SmartTrader trader, Date date) throws Exception{
+    private void startSimulation(File inputDirectory, Trader trader, Date startDate, Date endDate) throws Exception
+    {
+
+        float asset = 0;
 
         /* Start the stock market simulation beginning at date */
 
@@ -44,24 +65,31 @@ public class Simulator {
          * Key: Stock Symbol
          * Value: Linked list of daily prices of the stock
          */
-        mse.initStockExchange(inputDirectory, date);
-
-        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse("2013-09-13");
+        mse.initStockExchange(inputDirectory, startDate);
 
         System.out.println("Before starting ");
         trader.money.print();
 
-        while(date.before(endDate))
+        while(startDate.before(endDate))
         {
-            trader.performAction(mse, date);
+            trader.performAction(mse, startDate);
 
-            date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
-            mse.setDate(date);
+            startDate.setTime(startDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+            mse.setDate(startDate);
 
         }
 
-        System.out.println("Finally left with: ");
+        System.out.println("Finally left with on: " + endDate);
         trader.money.print();
-        System.out.println("\nTotal Assets: " + trader.getTotalAssetValue(mse));
+
+        /* Find the total assets */
+        asset = trader.getTotalAssetValue(mse);
+
+        System.out.println("\nTotal Assets: " + asset);
+        sumOfAllSimulations += asset;
+
+        System.out.println("********************************************************");
+        System.out.println("SUM: " + sumOfAllSimulations);
+        System.out.println("********************************************************");
     }
 }
