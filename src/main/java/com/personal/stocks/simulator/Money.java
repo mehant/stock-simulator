@@ -9,6 +9,8 @@ package com.personal.stocks.simulator;
  */
 public class Money {
 
+    public static final String INITIAL_INVESTMENT_PROPERTY = "initial.investment";
+
     float totalAmount;
     float investedAmount;
 
@@ -16,6 +18,11 @@ public class Money {
     {
         this.totalAmount = totalAmount;
         this.investedAmount = 0;
+    }
+
+    public Money()
+    {
+        totalAmount = Float.parseFloat(Conf.get(INITIAL_INVESTMENT_PROPERTY));
     }
 
     public float getAvailableFunds() {

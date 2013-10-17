@@ -3,11 +3,25 @@
   <property>
     <name>simulator.trader.class</name>
     <value>com.personal.stocks.simulator.SmartTrader</value>
+    <description>
+      Specifies which trader to use
+    </description>
   </property>
 
   <property>
     <name>profit.margin</name>
     <value>1.25</value>
+    <description>
+      Profit margin at which to sell the stocks
+    </description>
+  </property>
+
+  <property>
+    <name>initial.investment</name>
+    <value>5000</value>
+    <description> 
+      Initial investment
+    </description>
   </property>
 
 </configuration>

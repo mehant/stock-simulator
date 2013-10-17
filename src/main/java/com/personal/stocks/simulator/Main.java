@@ -63,13 +63,8 @@ public class Main {
 
             System.out.println("Trading stock: " + portfolio[0] + "\n \n \n");
 
-            /* Get the total investment amount and
-             * create a Money object
-             */
-
-            System.out.println("Investing: " + args[1]);
-
-            Money money = new Money(Integer.parseInt(args[1]));
+            /* Create a money object; will get the initial investment from config file */
+            Money money = new Money();
 
             System.out.println("TraderClassName: " + traderClass.getName());
 
