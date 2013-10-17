@@ -1,0 +1,13 @@
+<configuration>
+  
+  <property>
+    <name>simulator.trader.class</name>
+    <value>com.personal.stocks.simulator.SmartTrader</value>
+  </property>
+
+  <property>
+    <name>profit.margin</name>
+    <value>1.25</value>
+  </property>
+
+</configuration>

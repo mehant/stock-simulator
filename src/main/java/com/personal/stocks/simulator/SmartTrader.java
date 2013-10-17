@@ -11,14 +11,16 @@ import java.util.*;
  */
 public class SmartTrader extends Trader {
 
-    public SmartTrader()
-    {
-        super();
-    }
+    public static final String PROFIT_MARGIN_PROPERTY = "profit.margin";
 
     public SmartTrader(Money money)
     {
         super(money);
+    }
+
+    public SmartTrader()
+    {
+        super();
     }
 
     public class BuyDetails
@@ -49,13 +51,11 @@ public class SmartTrader extends Trader {
 
     }
 
-    //public Money money;
-
     /* Indicates the margin upon which
      * the sell will be triggered
      * Its X times the buy price
      */
-    public float profitMargin = (float) 1.25;
+    public static float profitMargin = Float.parseFloat(Conf.get(PROFIT_MARGIN_PROPERTY));
 
     LinkedHashMap<String, BuyDetails> portfolio;
 
@@ -63,12 +63,6 @@ public class SmartTrader extends Trader {
      * after it went IPO
      */
     int years = 5;
-
-
-    /*public SmartTrader(Money money)
-    {
-        this.money = money;
-    } */
 
     public void setPortfolio(String[] symbols)
     {
@@ -162,7 +156,6 @@ public class SmartTrader extends Trader {
 
             if (((sellPrice/buyPrice)) >= profitMargin)
             {
-                //System.out.println("Sellprice: " + sellPrice + "buyPrice: " + buyPrice + "margin" + ((sellPrice/buyPrice)));
                 return true;
             }
 

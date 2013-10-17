@@ -29,39 +29,29 @@ public class Main {
             System.exit(0);
         }
 
+        /* Going forward we will have numerous types of Traders
+         * Currently we only have one SmartTrader. But the trader we
+         * use to perform our simulation should come from a configuration
+         * file.
+         */
+        String className = Conf.get(Trader.TRADER_CLASS_PROPERTY);
+
         /* Initialize the simulator */
         Simulator sim = new Simulator();
 
-        Configuration conf = new Configuration();
-        File file = new File("/Users/mbaid/set52WLow/configuration.xml");
-
-        /* If configuration file does not exist, exit */
-        if (!file.exists())
-            System.exit(0);
-
-        InputStream input = new FileInputStream(file.getAbsoluteFile());
-
-        /* Add the properties in the configuration file */
-        conf.addResource(input);
-
-        String className = conf.get("simulator.trader.class");
         Class <? extends Object> traderClass = null;
 
         if (className != null)
         {
-
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        traderClass = cl.loadClass(className);
-        System.out.println("trader class: " + traderClass);
-
-
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            traderClass = cl.loadClass(className);
+            System.out.println("trader class: " + traderClass);
         }
 
         /* For each stock symbol in this directory
          * run the simulation assuming you can buy
          * only one stock
          */
-
         for (File inputFile: inputDirectory.listFiles())
         {
             /*  portfolio */
